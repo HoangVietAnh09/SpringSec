@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Xem Ảnh</title>
+</head>
+<body>
+<h2>Ảnh: <span th:text="${imageName}"></span></h2>
+
+<img th:src="@{'/file/' + ${imageName}}" width="600px" />
+
+<br>
+<a href="/springsec/file/images">Quay lại danh sách</a>
+</body>
+</html>

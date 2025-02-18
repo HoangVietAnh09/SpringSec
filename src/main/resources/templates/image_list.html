@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Danh sách Ảnh</title>
+</head>
+<body>
+<h2>Danh sách Ảnh</h2>
+
+<div th:each="image : ${images}">
+    <a th:href="@{/file/view(name=${image})}">
+        <img th:src="@{'/file/' + ${image}}" width="200px" />
+    </a>
+    <p th:text="${image}"></p>
+</div>
+
+</body>
+</html>

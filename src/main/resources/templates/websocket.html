@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>WebSocket Demo</title>
+</head>
+<body>
+<script>
+    var socket = new WebSocket("ws://127.0.0.1:8080/springsec/websocket");
+
+    socket.onopen = function () {
+        console.log("Connected!");
+        socket.send("Hello Server!");
+    };
+
+    socket.onmessage = function (event) {
+        console.log("Received: " + event.data);
+    };
+
+    socket.onclose = function () {
+        console.log("Disconnected!");
+    };
+</script>
+</body>
+</html>

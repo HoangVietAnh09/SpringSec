@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .feedback-list {
+            margin-top: 30px;
+        }
+
+        .feedback-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .feedback-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Feedback Form</h1>
+    <form action="/springsec/xss/feedback" method="POST">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="hoVaTen" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="rating">Rating</label>
+            <select id="rating" name="danhGia" required>
+                <option value="5">5 - Excellent</option>
+                <option value="4">4 - Good</option>
+                <option value="3">3 - Average</option>
+                <option value="2">2 - Poor</option>
+                <option value="1">1 - Terrible</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="comment">Comment</label>
+            <textarea id="comment" name="nhanXet" rows="4" required></textarea>
+        </div>
+        <button type="submit">Submit Feedback</button>
+    </form>
+
+    <div class="feedback-list">
+        <h2>Feedback List</h2>
+        <div th:each="feedback : ${feedbackList}" class="feedback-item">
+            <p><strong th:text="${feedback.hoVaTen}">Name</strong> (<span th:text="${feedback.email}">Email</span>)</p>
+            <p>Rating: <span th:text="${feedback.danhGia}">5</span></p>
+            <p th:text="${feedback.nhanXet}">Comment</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

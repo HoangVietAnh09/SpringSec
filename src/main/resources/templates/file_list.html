@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Danh sách File</title>
+</head>
+<body>
+<h2>Danh sách File trong thư mục</h2>
+<ul>
+    <li th:each="file : ${files}" th:text="${file}"></li>
+</ul>
+</body>
+</html>
