@@ -62,6 +62,11 @@ public class UploadFileController {
         return "upload";
     }
 
+    @GetMapping("/uploadimage")
+    public String uploadImage(){
+        return "uploadImage";
+    }
+
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
         if (file.isEmpty()) {
@@ -77,7 +82,9 @@ public class UploadFileController {
             randomPath = upload_foldder + uuid + suffix;
             System.out.println(randomPath);
             byte[] bytes = file.getBytes();
-            Path path = Paths.get(upload_foldder + file.getOriginalFilename());
+//            Path path = Paths.get(upload_foldder + file.getOriginalFilename());
+            Path path = Paths.get(randomPath);
+            System.out.println(path);
             Files.write(path, bytes);
 
 
