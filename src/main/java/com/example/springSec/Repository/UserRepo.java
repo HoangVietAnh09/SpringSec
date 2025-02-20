@@ -19,6 +19,6 @@ public interface UserRepo extends JpaRepository<User, String> {
     Optional<User> findByUsername(String username);
 
 
-    @Query(value = "select * from users where username = :username", nativeQuery = true)
+    @Query(value = "select * from users where username = '" + "?1" + "'", nativeQuery = true)
     List<User> findByUsernameVuln(String username);
 }

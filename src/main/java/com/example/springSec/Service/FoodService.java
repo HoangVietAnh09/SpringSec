@@ -6,6 +6,7 @@ import com.example.springSec.Repository.UserRepo;
 import com.example.springSec.dto.Request.FoodRequest;
 import com.example.springSec.dto.Response.FoodResponse;
 import com.example.springSec.mapper.FoodMapper;
+import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -44,5 +45,8 @@ public class FoodService {
     public List<Food> getFoodByName(String name) {
         return foodRepo.findFoodByName(name);
     }
+
+
+
 }
 

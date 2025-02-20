@@ -1,6 +1,7 @@
 package com.example.springSec.Controller;
 
 
+import com.example.springSec.DAO.FoodDAO;
 import com.example.springSec.Entity.Food;
 import com.example.springSec.Service.FoodService;
 import com.example.springSec.dto.Request.FoodRequest;
@@ -21,6 +22,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FoodController {
 
+    FoodDAO foodDAO;
+
     FoodService foodService;
 
 //    @PostMapping()
@@ -33,7 +36,7 @@ public class FoodController {
     @GetMapping()
     public ApiResponse<List<Food>> getFoodByName(@RequestParam String name) {
         return ApiResponse.<List<Food>>builder()
-                .result(foodService.getFoodByName(name))
+                .result(foodDAO.getFoodByName(name))
                 .build();
     }
 
