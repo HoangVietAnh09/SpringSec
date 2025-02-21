@@ -23,16 +23,17 @@ public class XSSController {
 
     @RequestMapping("/reflect")
     @ResponseBody
-    public String reflect(String ten) {
+    public String reflect(@RequestParam String ten) {
         return ten;
     }
 
     @RequestMapping("/store")
     @ResponseBody
-    public String store(String ten, HttpServletResponse cookie) {
+    public String store(@RequestParam String ten, HttpServletResponse cookie) {
         Cookie ck = new Cookie("xss_Cookie", ten);
         cookie.addCookie(ck);
-        return "setted cookie";
+//        return "setted cookie";
+        return ten;
     }
 
     @GetMapping("/feedback")
@@ -47,4 +48,5 @@ public class XSSController {
         feedBackService.addFeedBack(feedBackRequest);
         return "redirect:/xss/feedback";
     }
+
 }

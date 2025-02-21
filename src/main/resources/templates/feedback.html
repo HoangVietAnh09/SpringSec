@@ -113,7 +113,11 @@
         <div th:each="feedback : ${feedbackList}" class="feedback-item">
             <p><strong th:text="${feedback.hoVaTen}">Name</strong> (<span th:text="${feedback.email}">Email</span>)</p>
             <p>Rating: <span th:text="${feedback.danhGia}">5</span></p>
+            <!--vuln code
+            <p th:utext="${feedback.nhanXet}">Comment</p>-->
+            <!-- safe code-->
             <p th:text="${feedback.nhanXet}">Comment</p>
+
         </div>
     </div>
 </div>
