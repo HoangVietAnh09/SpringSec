@@ -26,7 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
 
     public final String[] PUBLIC_ENDPOINT = {"/users", "/users/login", "/auth/**", "/oscommand", "/pathtraversal", "/file/**", "/upload",
-                                            "/xss/**", "/food", "/ssti/**", "/sqli/**", "/ssrf", "/xxe/**", "/csrf/**", "/websocket/**"};
+                                            "/xss/**", "/food", "/ssti/**", "/sqli/**", "/ssrf", "/xxe/**", "/csrf/**", "/websocket/**", "/csrf/**"};
 
     @Value("${jwt.signerKey}")
     private String signerKey;
