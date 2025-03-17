@@ -36,7 +36,6 @@ public class SQLiController {
 
 //    @Value("${spring.datasource.url}")
     static String url = "jdbc:sqlserver://localhost:1433;databaseName=CtyA;encrypt=true;trustServerCertificate=true";
-//    jdbc:sqlserver://localhost:1433;databaseName=SinhVien;encrypt=true;trustServerCertificate=true
 
 //    @Value("${spring.datasource.username}")
     static String user = "sa";
@@ -45,9 +44,9 @@ public class SQLiController {
     static String password = "Vietanh204@";
     private final HttpSession httpSession;
     private final LocalContainerEntityManagerFactoryBean entityManagerFactory;
-    //Vuln code
-    @GetMapping("/vuln")
-        public String vuln(@RequestParam String username) {
+
+    @GetMapping("/vuln1")
+    public String vuln_1(@RequestParam String username) {
         StringBuilder result = new StringBuilder();
         try{
             Class.forName(driver);
@@ -80,89 +79,82 @@ public class SQLiController {
         return result.toString();
     }
 
+    @GetMapping("/vuln2")
+    public String vuln_2(@RequestParam String username) {
+        StringBuilder result = new StringBuilder();
+        try{
+            Class.forName(driver);
+            Connection con = DriverManager.getConnection(url, user, password);
+
+            if(!con.isClosed()){
+                System.out.println("Connected");
+            }
+            String sql = "select * from users where username = '" + username + "'";
+            PreparedStatement ps = con.prepareStatement(sql);
+            log.info(ps.toString());
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                String res_name = rs.getString("username");
+                String res_password = rs.getString("password");
+                String info = String.format("%s: %s\n", res_name, res_password);
+                result.append(info);
+                log.info(info);
+            }
+
+            rs.close();
+            ps.close();
+        } catch (ClassNotFoundException e) {
+            log.error("Can not connect");
+        } catch (SQLException e){
+            log.error(e.toString());
+        }
+        return result.toString();
+    }
+
     //safe code: truyền tham số với preparestatement
-//    @GetMapping("/vuln")
-//    public String vuln(@RequestParam String username) {
-//        StringBuilder result = new StringBuilder();
-//        try{
-//            Class.forName(driver);
-//            Connection con = DriverManager.getConnection(url, user, password);
-//
-//            if(!con.isClosed()){
-//                System.out.println("Connected");
-//            }
-//            String sql = "select * from users where username = ?";
-//            PreparedStatement ps = con.prepareStatement(sql);
-//            ps.setString(1, username);
-//            log.info(ps.toString());
-//            ResultSet rs = ps.executeQuery();
-//
-//            while(rs.next()){
-//                String res_name = rs.getString("username");
-//                String res_password = rs.getString("password");
-//                String info = String.format("%s: %s\n", res_name, res_password);
-//                result.append(info);
-//                log.info(info);
-//            }
-//
-//            rs.close();
-//            ps.close();
-//        } catch (ClassNotFoundException e) {
-//            log.error("Can not connect");
-//        } catch (SQLException e){
-//            log.error(e.toString());
-//        }
-//        return result.toString();
-//    }
+    @GetMapping("/vuln")
+    public String vuln(@RequestParam String username) {
+        StringBuilder result = new StringBuilder();
+        try{
+            Class.forName(driver);
+            Connection con = DriverManager.getConnection(url, user, password);
+
+            if(!con.isClosed()){
+                System.out.println("Connected");
+            }
+            String sql = "select * from users where username = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, username);
+            log.info(ps.toString());
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                String res_name = rs.getString("username");
+                String res_password = rs.getString("password");
+                String info = String.format("%s: %s\n", res_name, res_password);
+                result.append(info);
+                log.info(info);
+            }
+
+            rs.close();
+            ps.close();
+        } catch (ClassNotFoundException e) {
+            log.error("Can not connect");
+        } catch (SQLException e){
+            log.error(e.toString());
+        }
+        return result.toString();
+    }
 
 
-
-    //vuln code
-//    @GetMapping("/vuln")
-//    public String vuln(@RequestParam String username) {
-//        StringBuilder result = new StringBuilder();
-//        try{
-//            Class.forName(driver);
-//            Connection con = DriverManager.getConnection(url, user, password);
-//
-//            if(!con.isClosed()){
-//                System.out.println("Connected");
-//            }
-//            String sql = "select * from users where username = '" + username + "'";
-//            PreparedStatement ps = con.prepareStatement(sql);
-//            log.info(ps.toString());
-//            ResultSet rs = ps.executeQuery();
-//
-//            while(rs.next()){
-//                String res_name = rs.getString("username");
-//                String res_password = rs.getString("password");
-//                String info = String.format("%s: %s\n", res_name, res_password);
-//                result.append(info);
-//                log.info(info);
-//            }
-//
-//            rs.close();
-//            ps.close();
-//        } catch (ClassNotFoundException e) {
-//            log.error("Can not connect");
-//        } catch (SQLException e){
-//            log.error(e.toString());
-//        }
-//        return result.toString();
-//    }
-
-
-//    @GetMapping("/findUserByName")
-//    public List<User> findUserByName(@RequestParam String name) {
-//        String sql = "SELECT * FROM users WHERE username = '" + name + "'";
-//        EntityManager entityManager = null;
-//        Query query = (Query) entityManager.createNativeQuery(sql);
-//        List<User> result = query.getResultList();
-//        return result;
-//
-//
-//    }
-
-
+    @GetMapping("/findUserByName")
+    public List<User> findUserByName(@RequestParam String name) {
+        String sql = "SELECT * FROM users WHERE username = '" + name + "'";
+        EntityManager entityManager = null;
+        Query query = (Query) entityManager.createNativeQuery(sql);
+        List<User> result = query.getResultList();
+        return result;
+    }
 
 }
