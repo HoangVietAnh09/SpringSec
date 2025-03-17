@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Controller
@@ -36,6 +37,7 @@ public class UploadFileController {
 
     private static final String upload_foldder = "D:/Spring/springSec/springSec/src/main/resources/uploads/";
     private static String randomPath = "";
+    private final ReentrantLock lock = new ReentrantLock();
 
 
     @GetMapping("/images")
@@ -100,70 +102,81 @@ public class UploadFileController {
     //Vuln Code
     @PostMapping("/upload/image")
     public String uploadImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) throws IOException {
-        if(file.isEmpty()) {
-            return "Please select a file";
-        }
-
-        String filename = file.getOriginalFilename();
-        String ext = filename.substring(filename.lastIndexOf("."));
-        String mimeType = file.getContentType();
-        String filePath = upload_foldder + filename;
-        File excelFile = convert(file);
-        String[] whiteList = {".jpg", ".png", ".jpeg", ".gif", ".bmp", ".ico"};
-        boolean suffixFlag = false;
-        for(String i : whiteList){
-            if(ext.toLowerCase().equals(i)){
-                suffixFlag = true;
-                break;
-            }
-        }
-        if(!suffixFlag){
-            log.error("[-] Suffix error: " + ext);
-            deleteFile(filePath);
-            return "Upload failed. Illeagl picture.";
-        }
-
-        String[] mimeTypeBlackList = {
-                "application/java-archive",
-                "application/java-vm",
-                "application/x-java-jnlp-file",
-                "application/java-serialized-object",
-                "text/x-java-source,java"
-        };
-
-        for(String i : mimeTypeBlackList){
-            if(escapeIME(mimeType).toLowerCase().contains(i)){
-                log.error("[-] MimeType error: " + mimeType);
-                deleteFile(filePath);
-                return "Upload failed. Illeagl picture.";
-            }
-        }
-
-        boolean isImage = isImage(excelFile);
-        deleteFile(randomPath);
-
-        if(!isImage){
-            log.error("[-] Image error");
-            deleteFile(filePath);
-            return "Upload failed. Illeagl picture.";
-        }
-
+        lock.lock();
         try{
-               byte[] bytes = file.getBytes();
-               Path path = Paths.get(upload_foldder + file.getOriginalFilename());
-               Files.write(path, bytes);
-        }catch (IOException e){
-            log.error(e.toString());
-            deleteFile(filePath);
-            return "Upload failed. Illeagl picture.";
+            if(file.isEmpty()) {
+                redirectAttributes.addFlashAttribute("message", "Please select a file");
+                return "redirect:/file/status";
 
+            }
+
+            String filename = file.getOriginalFilename();
+            String ext = filename.substring(filename.lastIndexOf("."));
+            String mimeType = file.getContentType();
+            String filePath = upload_foldder + filename;
+            File excelFile = convert(file);
+            String[] whiteList = {".jpg", ".png", ".jpeg", ".gif", ".bmp", ".ico"};
+            boolean suffixFlag = false;
+            for(String i : whiteList){
+                if(ext.toLowerCase().equals(i)){
+                    suffixFlag = true;
+                    break;
+                }
+            }
+            if(!suffixFlag){
+                log.error("[-] Suffix error: " + ext);
+                deleteFile(excelFile.getAbsolutePath());
+                redirectAttributes.addFlashAttribute("message", "Upload failed. Illeagl picture.");
+                return "redirect:/file/status";
+            }
+
+            String[] mimeTypeBlackList = {
+                    "application/java-archive",
+                    "application/java-vm",
+                    "application/x-java-jnlp-file",
+                    "application/java-serialized-object",
+                    "text/x-java-source,java"
+            };
+
+            for(String i : mimeTypeBlackList){
+                if(escapeIME(mimeType).toLowerCase().contains(i)){
+                    log.error("[-] MimeType error: " + mimeType);
+                    deleteFile(excelFile.getAbsolutePath());
+                    redirectAttributes.addFlashAttribute("message", "Upload failed. Illeagl picture.");
+                    return "redirect:/file/status";
+                }
+            }
+
+            boolean isImage = isImage(excelFile);
+            deleteFile(randomPath);
+
+            if(!isImage){
+                log.error("[-] Image error");
+                deleteFile(excelFile.getAbsolutePath());
+                redirectAttributes.addFlashAttribute("message", "Upload failed. Illeagl picture.");
+                return "redirect:/file/status";
+            }
+
+            try{
+                   byte[] bytes = file.getBytes();
+                   Path path = Paths.get(upload_foldder + file.getOriginalFilename());
+                   Files.write(path, bytes);
+            }catch (IOException e){
+                log.error(e.toString());
+                deleteFile(excelFile.getAbsolutePath());
+                redirectAttributes.addFlashAttribute("message", "Upload failed. Illeagl picture.");
+                return "redirect:/file/status";
+
+            }
+
+            log.info("[+] Safe file. Suffix: {}, MIME: {}", ext, mimeType);
+            log.info("[+] Successfully uploaded {}", filePath);
+            redirectAttributes.addFlashAttribute("message", "File uploaded successfully");
+
+            return "redirect:/file/status";
+        } finally {
+            lock.unlock();
         }
-
-        log.info("[+] Safe file. Suffix: {}, MIME: {}", ext, mimeType);
-        log.info("[+] Successfully uploaded {}", filePath);
-        redirectAttributes.addFlashAttribute("message", "File uploaded successfully");
-
-        return "redirect:/file/status";
 
     }
 
@@ -222,75 +235,6 @@ public class UploadFileController {
         return sb != null;
     }
 
-    //Safe code
-    @PostMapping("/upload/image")
-    public synchronized String uploadImageSafe(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) throws IOException {
-        if(file.isEmpty()) {
-            return "Please select a file";
-        }
-
-        String filename = file.getOriginalFilename();
-        String ext = filename.substring(filename.lastIndexOf("."));
-        String mimeType = file.getContentType();
-        String filePath = upload_foldder + filename;
-        File excelFile = convert(file);
-        String[] whiteList = {".jpg", ".png", ".jpeg", ".gif", ".bmp", ".ico"};
-        boolean suffixFlag = false;
-        for(String i : whiteList){
-            if(ext.toLowerCase().equals(i)){
-                suffixFlag = true;
-                break;
-            }
-        }
-        if(!suffixFlag){
-            log.error("[-] Suffix error: " + ext);
-            deleteFile(filePath);
-            return "Upload failed. Illeagl picture.";
-        }
-
-        String[] mimeTypeBlackList = {
-                "application/java-archive",
-                "application/java-vm",
-                "application/x-java-jnlp-file",
-                "application/java-serialized-object",
-                "text/x-java-source,java"
-        };
-
-        for(String i : mimeTypeBlackList){
-            if(escapeIME(mimeType).toLowerCase().contains(i)){
-                log.error("[-] MimeType error: " + mimeType);
-                deleteFile(filePath);
-                return "Upload failed. Illeagl picture.";
-            }
-        }
-
-        boolean isImage = isImage(excelFile);
-        deleteFile(randomPath);
-
-        if(!isImage){
-            log.error("[-] Image error");
-            deleteFile(filePath);
-            return "Upload failed. Illeagl picture.";
-        }
-
-        try{
-            byte[] bytes = file.getBytes();
-            Path path = Paths.get(upload_foldder + file.getOriginalFilename());
-            Files.write(path, bytes);
-        }catch (IOException e){
-            log.error(e.toString());
-            deleteFile(filePath);
-            return "Upload failed. Illeagl picture.";
-
-        }
-
-        log.info("[+] Safe file. Suffix: {}, MIME: {}", ext, mimeType);
-        log.info("[+] Successfully uploaded {}", filePath);
-        redirectAttributes.addFlashAttribute("message", "File uploaded successfully");
-
-        return "redirect:/file/status";
-
-    }
 }
 
 
