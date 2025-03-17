@@ -2,6 +2,7 @@ package com.example.springSec.DAO;
 
 
 import com.example.springSec.Entity.Food;
+import com.example.springSec.dto.Response.FoodResponse;
 import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
