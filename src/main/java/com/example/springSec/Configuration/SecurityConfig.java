@@ -25,8 +25,9 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    public final String[] PUBLIC_ENDPOINT = {"/users", "/users/login", "/auth/**", "/oscommand", "/pathtraversal", "/file/**", "/upload",
-                                            "/xss/**", "/food", "/ssti/**", "/sqli/**", "/ssrf", "/xxe/**", "/csrf/**", "/websocket/**", "/csrf/**"};
+    public final String[] PUBLIC_ENDPOINT = {"/home", "/users", "/users/login", "/auth/**", "/oscommand", "/pathtraversal/**", "/file/**", "/upload",
+                                            "/xss/**", "/food/**", "/ssti/**", "/sqli/**", "/ssrf", "/xxe/**", "/csrf/**", "/websocket/**",
+                                            "/csrf/**", "/xstream/**", "/invocation/**", "/log4shell/**", "/scriptinjection/**"};
 
     @Value("${jwt.signerKey}")
     private String signerKey;
